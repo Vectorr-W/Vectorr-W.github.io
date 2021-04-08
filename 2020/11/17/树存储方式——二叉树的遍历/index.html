@@ -1,0 +1,211 @@
+<!DOCTYPE html><html lang="zh-Hans" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>树存储方式——二叉树的遍历 | 魏先森</title><meta name="keywords" content="数据结构"><meta name="author" content="魏翰廷"><meta name="copyright" content="魏翰廷"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta http-equiv="Cache-Control" content="no-transform"><meta http-equiv="Cache-Control" content="no-siteapp"><meta name="description" content="树存储方式——二叉树的遍历对比： 数组： 优点：可以通过下标方式访问元素，对于有序数组还可使用二分法查找提高检索速度。 缺点：如果要检索具体某个值，或插入值（按一定顺序）会移动，效率较低 扩容时：无参构造器，扩容第一次到10，之后按1.5倍 ​                指定容量构造器，扩容按1.5倍扩  链式：   ​        优点：插入删除效率高 ​        缺点：进行检索时效">
+<meta property="og:type" content="article">
+<meta property="og:title" content="树存储方式——二叉树的遍历">
+<meta property="og:url" content="http://iamwei.top/2020/11/17/%E6%A0%91%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F%E2%80%94%E2%80%94%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86/index.html">
+<meta property="og:site_name" content="魏先森">
+<meta property="og:description" content="树存储方式——二叉树的遍历对比： 数组： 优点：可以通过下标方式访问元素，对于有序数组还可使用二分法查找提高检索速度。 缺点：如果要检索具体某个值，或插入值（按一定顺序）会移动，效率较低 扩容时：无参构造器，扩容第一次到10，之后按1.5倍 ​                指定容量构造器，扩容按1.5倍扩  链式：   ​        优点：插入删除效率高 ​        缺点：进行检索时效">
+<meta property="og:locale">
+<meta property="og:image" content="http://iamwei.top/img/2tree.jpg">
+<meta property="article:published_time" content="2020-11-17T07:21:35.000Z">
+<meta property="article:modified_time" content="2020-11-17T07:31:35.005Z">
+<meta property="article:author" content="魏翰廷">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://iamwei.top/img/2tree.jpg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://iamwei.top/2020/11/17/%E6%A0%91%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F%E2%80%94%E2%80%94%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><meta name="yandex-verification" content="{&quot;theme_color&quot;:{&quot;enable&quot;:true,&quot;main&quot;:&quot;#000000&quot;,&quot;paginator&quot;:&quot;#00c4b6&quot;,&quot;button_hover&quot;:&quot;#FF7242&quot;,&quot;text_selection&quot;:&quot;#00c4b6&quot;,&quot;link_color&quot;:&quot;#99a9bf&quot;,&quot;meta_color&quot;:&quot;#858585&quot;,&quot;hr_color&quot;:&quot;#A4D8FA&quot;,&quot;code_foreground&quot;:&quot;#F47466&quot;,&quot;code_background&quot;:&quot;rgba(27, 31, 35, .05)&quot;,&quot;toc_color&quot;:&quot;#00c4b6&quot;,&quot;blockquote_padding_color&quot;:&quot;#49b1f5&quot;,&quot;blockquote_background_color&quot;:&quot;#49b1f5&quot;}}"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css"><script>var GLOBAL_CONFIG = { 
+  root: '/',
+  hexoversion: '5.2.0',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  ClickShowText: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  justifiedGallery: {
+    js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+    css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+};
+
+var saveToLocal = {
+  set: function setWithExpiry(key, value, ttl) {
+    const now = new Date()
+    const expiryDay = ttl * 86400000
+    const item = {
+      value: value,
+      expiry: now.getTime() + expiryDay,
+    }
+    localStorage.setItem(key, JSON.stringify(item))
+  },
+
+  get: function getWithExpiry(key) {
+    const itemStr = localStorage.getItem(key)
+
+    if (!itemStr) {
+      return undefined
+    }
+    const item = JSON.parse(itemStr)
+    const now = new Date()
+
+    if (now.getTime() > item.expiry) {
+      localStorage.removeItem(key)
+      return undefined
+    }
+    return item.value
+  }
+}</script><script id="config_change">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isSidebar: true,
+  postUpdate: '2020-11-17 15:31:35'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(function () {
+  window.activateDarkMode = function () {
+    document.documentElement.setAttribute('data-theme', 'dark')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+    }
+  }
+  window.activateLightMode = function () {
+    document.documentElement.setAttribute('data-theme', 'light')
+    if (document.querySelector('meta[name="theme-color"]') !== null) {
+      document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+    }
+  }
+
+  const autoChangeMode = 'false'
+  const t = saveToLocal.get('theme')
+  if (autoChangeMode === '1') {
+    const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const isLightMode = window.matchMedia('(prefers-color-scheme: light)').matches
+    const isNotSpecified = window.matchMedia('(prefers-color-scheme: no-preference)').matches
+    const hasNoSupport = !isDarkMode && !isLightMode && !isNotSpecified
+
+    if (t === undefined) {
+      if (isLightMode) activateLightMode()
+      else if (isDarkMode) activateDarkMode()
+      else if (isNotSpecified || hasNoSupport) {
+        const now = new Date()
+        const hour = now.getHours()
+        const isNight = hour <= 6 || hour >= 18
+        isNight ? activateDarkMode() : activateLightMode()
+      }
+      window.matchMedia('(prefers-color-scheme: dark)').addListener(function (e) {
+        if (saveToLocal.get('theme') === undefined) {
+          e.matches ? activateDarkMode() : activateLightMode()
+        }
+      })
+    } else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else if (autoChangeMode === '2') {
+    const now = new Date()
+    const hour = now.getHours()
+    const isNight = hour <= 6 || hour >= 18
+    if (t === undefined) isNight ? activateDarkMode() : activateLightMode()
+    else if (t === 'light') activateLightMode()
+    else activateDarkMode()
+  } else {
+    if (t === 'dark') activateDarkMode()
+    else if (t === 'light') activateLightMode()
+  }
+})()</script><meta name="generator" content="Hexo 5.2.0"></head><body><div id="loading-box"><div class="loading-left-bg"></div><div class="loading-right-bg"></div><div class="spinner-box"><div class="configure-border-1"><div class="configure-core"></div></div><div class="configure-border-2"><div class="configure-core"></div></div><div class="loading-word">Loading...</div></div></div><div id="mobile-sidebar"><div id="menu_mask"></div><div id="mobile-sidebar-menus"><div class="mobile_author_icon"><img class="avatar-img" src="/null" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="mobile_post_data"><div class="mobile_data_item is-center"><div class="mobile_data_link"><a href="/archives/"><div class="headline">Articles</div><div class="length_num">32</div></a></div></div><div class="mobile_data_item is-center">      <div class="mobile_data_link"><a href="/tags/"><div class="headline">Tags</div><div class="length_num">4</div></a></div></div><div class="mobile_data_item is-center">     <div class="mobile_data_link"><a href="/categories/"><div class="headline">Categories</div><div class="length_num">3</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 文章标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div></div></div><div id="body-wrap"><div id="sidebar"><i class="fas fa-arrow-right on" id="toggle-sidebar"></i><div class="sidebar-toc"><div class="sidebar-toc__title">Catalog</div><div class="sidebar-toc__progress"><span class="progress-notice">You've read</span><span class="progress-num">0</span><span class="progress-percentage">%</span><div class="sidebar-toc__progress-bar">     </div></div><div class="sidebar-toc__content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A0%91%E5%AD%98%E5%82%A8%E6%96%B9%E5%BC%8F%E2%80%94%E2%80%94%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86"><span class="toc-number">1.</span> <span class="toc-text">树存储方式——二叉树的遍历</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%B9%E6%AF%94%EF%BC%9A"><span class="toc-number">1.1.</span> <span class="toc-text">对比：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A0%91%E5%B8%B8%E7%94%A8%E6%A6%82%E5%BF%B5%EF%BC%9A"><span class="toc-number">1.2.</span> <span class="toc-text">树常用概念：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%EF%BC%9A"><span class="toc-number">1.3.</span> <span class="toc-text">二叉树：</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BA%8C%E5%8F%89%E6%A0%91%E7%9A%84%E9%81%8D%E5%8E%86%E9%A1%BA%E5%BA%8F%EF%BC%9A"><span class="toc-number">1.3.1.</span> <span class="toc-text">二叉树的遍历顺序：</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%81%8D%E5%8E%86%E5%AE%9E%E7%8E%B0%E6%80%9D%E8%B7%AF%EF%BC%9A"><span class="toc-number">1.3.1.1.</span> <span class="toc-text">遍历实现思路：</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0%EF%BC%9A"><span class="toc-number">1.3.1.2.</span> <span class="toc-text">代码实现：</span></a></li></ol></li></ol></li></ol></li></ol></div></div></div><header class="post-bg" id="page-header" style="background-image: url(/img/2tree.jpg)"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">魏先森</a></span><span id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 文章标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div></div><span class="close" id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></span></span></nav><div id="post-info"><div id="post-title"><div class="posttitle">树存储方式——二叉树的遍历</div></div><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2020-11-17T07:21:35.000Z" title="Created 2020-11-17 15:21:35">2020-11-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2020-11-17T07:31:35.005Z" title="Updated 2020-11-17 15:31:35">2020-11-17</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%AE%97%E6%B3%95%E4%B8%8E%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">算法与数据结构</a></span></div><div class="meta-secondline"> <span class="post-meta-separator">|</span><span class="post-meta-pv-cv"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout_post" id="content-inner"><article id="post"><div class="post-content" id="article-container"><h2 id="树存储方式——二叉树的遍历"><a href="#树存储方式——二叉树的遍历" class="headerlink" title="树存储方式——二叉树的遍历"></a>树存储方式——二叉树的遍历</h2><h3 id="对比："><a href="#对比：" class="headerlink" title="对比："></a>对比：</h3><ul>
+<li><p><strong>数组：</strong></p>
+<p>优点：可以通过下标方式访问元素，对于有序数组还可使用二分法查找提高检索速度。</p>
+<p>缺点：如果要检索具体某个值，或插入值（按一定顺序）会移动，效率较低</p>
+<p>扩容时：无参构造器，扩容第一次到10，之后按1.5倍</p>
+<p>​                指定容量构造器，扩容按1.5倍扩</p>
+</li>
+<li><p><strong>链式：</strong></p>
+</li>
+</ul>
+<p>​        优点：插入删除效率高</p>
+<p>​        缺点：进行检索时效率依然较低（如检索某个值，需要从头结点开始遍历）</p>
+<ul>
+<li><strong>树：</strong></li>
+</ul>
+<p>​       能提高数据<strong>存储，读取</strong>的效率，如利用<strong>二叉排序树</strong>，既可保证数据的检索速度，也可保证数据的插入，删除，修改速度。</p>
+<h3 id="树常用概念："><a href="#树常用概念：" class="headerlink" title="树常用概念："></a>树常用概念：</h3><ul>
+<li>叶子节点：没有子节点的节点</li>
+<li>结点的权：节点的值</li>
+<li>路径：从根节点（root节点）找到该节点的路线</li>
+<li>层：同一级别的（横向）</li>
+<li>树的高度：最大层数</li>
+<li>子树：其中一个子节点作为根节点形成的树是其父节点的子树</li>
+<li>森林：多颗子树构成森林</li>
+</ul>
+<h3 id="二叉树："><a href="#二叉树：" class="headerlink" title="二叉树："></a>二叉树：</h3><ul>
+<li>每个节点最多只能有两个子节点，并分为<strong>左节点</strong>和<strong>右节点</strong></li>
+<li>如果二叉树所有叶子节点都在最后一层，并且总节点数为2^n-1,n为层数，则称为<strong>满二叉树</strong></li>
+<li>如果二叉树所有叶子节点都在最后一层或者倒数第二层，并且最后一层的叶子节点在左边连续，倒数第二层叶子节点在右边连续，则称为<strong>完全二叉树</strong></li>
+</ul>
+<h4 id="二叉树的遍历顺序："><a href="#二叉树的遍历顺序：" class="headerlink" title="二叉树的遍历顺序："></a>二叉树的遍历顺序：</h4><ul>
+<li>前序遍历：先<strong>输出父节点</strong>，再遍历左子树和右子树</li>
+<li>中序遍历：先遍历左子树，在<strong>输出父节点</strong>，再遍历右子树</li>
+<li>后序遍历：先遍历左子树，再遍历右子树，最后<strong>输出父节点</strong></li>
+</ul>
+<h5 id="遍历实现思路："><a href="#遍历实现思路：" class="headerlink" title="遍历实现思路："></a>遍历实现思路：</h5><ul>
+<li><p>创建一颗二叉树</p>
+</li>
+<li><p>前序遍历：1）先输出当前节点</p>
+<p>​                    2）如果左子节点不为空，则递归继续前序遍历</p>
+<p>​                    3）如果右子节点不为空，则递归继续前序遍历</p>
+</li>
+<li><p>中序遍历：1）如果当前节点的左子节点不为空，则递归继续中序遍历</p>
+<p>​                    2）输出当前节点</p>
+<p>​                    3）如果当前节点的右子节点不为空，则递归继续中序遍历</p>
+</li>
+<li><p>后序遍历：1）如果当前节点的左子节点不为空，则递归继续后序遍历</p>
+<p>​                    2）如果当前节点的右子节点不为空，则递归继续后序遍历</p>
+<p>​                    3）输出当前节点</p>
+</li>
+</ul>
+<h5 id="代码实现："><a href="#代码实现：" class="headerlink" title="代码实现："></a>代码实现：</h5><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//----------------------------测试主函数--------------------------------------------</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BinaryTreeDemo</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">        <span class="comment">//先需要创建一颗二叉树</span></span><br><span class="line">        BinaryTree binaryTree=<span class="keyword">new</span> BinaryTree();</span><br><span class="line">        <span class="comment">//创建需要的节点(先手动创建，后面通过递归创建二叉树)</span></span><br><span class="line">        HeroNode root=<span class="keyword">new</span> HeroNode(x,<span class="string">&quot;xx&quot;</span>);</span><br><span class="line">        HeroNode node1=<span class="keyword">new</span> HeroNode(x,<span class="string">&quot;xx&quot;</span>);</span><br><span class="line">        ......</span><br><span class="line">        root.setLeft(node1);</span><br><span class="line">        ......</span><br><span class="line">        binaryTree.setRoot(root);</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//-------------------------定义BinaryTree 二叉树------------------------------------</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BinaryTree</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> HeroNode root;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setRoot</span><span class="params">(HeroNode root)</span></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.root=root;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//前序遍历---------------------------------------------------------------------</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.root!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.root.preOrder();</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;二叉树为空，无法遍历&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//中序遍历---------------------------------------------------------------------</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">infixOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.root!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.root.infixOrder();</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;二叉树为空，无法遍历&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//后序遍历---------------------------------------------------------------------</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.root!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.root.postOrder();</span><br><span class="line">        &#125;<span class="keyword">else</span>&#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;二叉树为空，无法遍历&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//----------------------------------创建HeroNode节点-------------------------------</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HeroNode</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> no;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> HeroNode left;</span><br><span class="line">    <span class="keyword">private</span> HeroNode right;</span><br><span class="line">    <span class="comment">//右键构造器（no和name）</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">HeroNode</span><span class="params">(<span class="keyword">int</span>……)</span></span>&#123;</span><br><span class="line">               ……           &#125;</span><br><span class="line">    <span class="comment">//右键set get方法（因为属性是私有的）</span></span><br><span class="line">    ......</span><br><span class="line">    <span class="comment">//重写tostring方法（不勾选left和right）</span></span><br><span class="line">    ......</span><br><span class="line">     </span><br><span class="line">    <span class="comment">//编写前序遍历的方法-------------------------------------------------------------</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>)<span class="comment">//先输出父节点（当前节点）</span></span><br><span class="line">        <span class="comment">//递归向左子树前序遍历</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.left!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.left.preOrder();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//递归向右子树前序遍历</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.right!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.right.preOrder();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//中序遍历--------------------------------------------------------------------- </span></span><br><span class="line">		 <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">infixOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//递归向左子树中序遍历</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.left!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.left.infixOrder();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>)<span class="comment">//输出父节点（当前节点）</span></span><br><span class="line">        <span class="comment">//递归向右子树中序遍历</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.right!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.right.infixOrder();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//后序遍历---------------------------------------------------------------------</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postOrder</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//递归向左子树后序遍历</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.left!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.left.postOrder();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//递归向右子树后序遍历</span></span><br><span class="line">        <span class="keyword">if</span>(<span class="keyword">this</span>.right!=<span class="keyword">null</span>)&#123;</span><br><span class="line">            <span class="keyword">this</span>.right.postOrder();</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>)<span class="comment">//输出父节点（当前节点）</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+</div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/">数据结构</a></div><div class="post_share"><div class="social-share" data-image="/img/2tree.jpg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/11/18/%E4%BA%8C%E5%8F%89%E6%A0%91%E2%80%94%E2%80%94%E6%9F%A5%E6%89%BE%E5%92%8C%E5%88%A0%E9%99%A4%E8%8A%82%E7%82%B9%E5%8F%8A%E9%A1%BA%E5%BA%8F%E5%AD%98%E5%82%A8%E4%BA%8C%E5%8F%89%E6%A0%91/"><img class="prev-cover" src="/img/stree.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">二叉树——查找和删除节点及顺序存储二叉树</div></div></a></div><div class="next-post pull-right"><a href="/2020/11/16/%E5%93%88%E5%B8%8C%E8%A1%A8%EF%BC%88Hash%20table%EF%BC%89/"><img class="next-cover" src="/img/hash.jpg" onerror="onerror=null;src='/img/404.jpg'"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">哈希表（Hash table）</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span> Related Articles</span></div><div class="relatedPosts-list"><div><a href="/2020/11/30/二叉排序树（BST）/" title="二叉排序树（BST）"><img class="cover" src="/img/2ptree.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-30</div><div class="title">二叉排序树（BST）</div></div></a></div><div><a href="/2020/11/18/二叉树——查找和删除节点及顺序存储二叉树/" title="二叉树——查找和删除节点及顺序存储二叉树"><img class="cover" src="/img/stree.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-18</div><div class="title">二叉树——查找和删除节点及顺序存储二叉树</div></div></a></div><div><a href="/2020/12/02/图的遍历算法（DFS与BFS）/" title="图的遍历算法（DFS与BFS）"><img class="cover" src="/img/graphrun.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-02</div><div class="title">图的遍历算法（DFS与BFS）</div></div></a></div><div><a href="/2020/11/16/哈希表（Hash table）/" title="哈希表（Hash table）"><img class="cover" src="/img/hash.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-11-16</div><div class="title">哈希表（Hash table）</div></div></a></div><div><a href="/2020/12/02/图（Graph）/" title="图（Graph）"><img class="cover" src="/img/graph.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-02</div><div class="title">图（Graph）</div></div></a></div><div><a href="/2020/12/01/多叉树/" title="多叉树"><img class="cover" src="/img/mtree.jpg"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-01</div><div class="title">多叉树</div></div></a></div></div></div></article></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By 魏翰廷</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><section id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Switch Between Light And Dark Mode"><i class="fas fa-adjust"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></section><div><script src="https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js"></script><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js"></script><script>var preloader = {
+  endLoading: () => {
+    document.body.style.overflow = 'auto';
+    document.getElementById('loading-box').classList.add("loaded")
+  },
+  initLoading: () => {
+    document.body.style.overflow = '';
+    document.getElementById('loading-box').classList.remove("loaded")
+
+  }
+}
+window.addEventListener('load',()=> {preloader.endLoading()})</script><div class="js-pjax"><script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></div></body></html>
